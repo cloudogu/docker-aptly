@@ -2,27 +2,22 @@
 
 This container provides the aptly api on port 8080 which obviously is exposed. Aptly is configured by aptly.conf within the resources directory.
 
-# build
+### Documentation
 
-```bash
-docker build -t cloudogu/aptly:latest .
-```
+* [Deutsch] [Dokumentation](docs/getting_started_de.md)
+* [English] [Documentation](docs/getting_started_en.md)
 
-# usage
 
-```bash
-# stat the container
-docker run -v /some/host/path:/var/lib/aptly -p 8080:8080 cloudogu/aptly:latest
+---
+### What is the Cloudogu EcoSystem?
+The Cloudogu EcoSystem is an open platform, which lets you choose how and where your team creates great software. Each service or tool is delivered as a Dogu, a Docker container. Each Dogu can easily be integrated in your environment just by pulling it from our registry. We have a growing number of ready-to-use Dogus, e.g. SCM-Manager, Jenkins, Nexus, SonarQube, Redmine and many more. Every Dogu can be tailored to your specific needs. Take advantage of a central authentication service, a dynamic navigation, that lets you easily switch between the web UIs and a smart configuration magic, which automatically detects and responds to dependencies between Dogus. The Cloudogu EcoSystem is open source and it runs either on-premises or in the cloud. The Cloudogu EcoSystem is developed by Cloudogu GmbH under [MIT License](https://cloudogu.com/license.html).
 
-# create a repository
-curl -X POST -H 'Content-Type: application/json' --data '{"Name": "aptly-repo"}' http://localhost:8080/api/repos
+### How to get in touch?
+Want to talk to the Cloudogu team? Need help or support? There are several ways to get in touch with us:
 
-# upload a package
-curl -F file=@dist/hitchhiker_0.5.1.deb http://localhost:8080/api/files/hitchhiker_0.5.1.deb
+* [Website](https://cloudogu.com)
+* [myCloudogu-Forum](https://forum.cloudogu.com/topic/34?ctx=1)
+* [Email hello@cloudogu.com](mailto:hello@cloudogu.com)
 
-# add package to the repository
-curl -X POST http://localhost:8080/api/repos/cloudogu-repo/file/hitchhiker_0.5.1.deb
-
-# publish repository
-curl -X POST -H 'Content-Type: application/json' --data '{"Distribution": "ubuntu", "SourceKind": "local", "Sources": [{"Name": "aptly-repo"}], "Signing": {"Batch": true, "Passphrase": "changeme"}}' http://localhost:8080/api/publish/repos
-```
+---
+&copy; 2021 Cloudogu GmbH - MADE WITH :heart:&nbsp;FOR DEV ADDICTS. [Legal notice / Impressum](https://cloudogu.com/imprint.html)
