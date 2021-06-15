@@ -1,4 +1,7 @@
 #!/bin/bash
+set -o errexit
+set -o nounset
+set -o pipefail
 
 if [ "${GPG_KEY}" != "" ]; then
   if [ "${PASSPHRASE}" != "" ]; then
@@ -8,10 +11,10 @@ if [ "${GPG_KEY}" != "" ]; then
   fi
 fi
 
-# besure public directory exists
+# be sure public directory exists
 if ! [ -d /var/lib/aptly/public ]; then
   mkdir /var/lib/aptly/public
 fi
 
-# execute parameters
-exec "$@"
+# start aptly
+/usr/bin/aptly api serve

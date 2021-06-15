@@ -1,18 +1,34 @@
-FROM debian:8.10
-LABEL maintainer="sebastian.sdorra@cloudogu.com"
+FROM alpine:edge
+
+LABEL NAME="docker-aptly" \
+    maintainer="hello@cloudogu.com"
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    APTLY_VERSION=1.2.0
+    APTLY_VERSION=1.4.0 \
+    SHA256_APTLY="b3eb077d0e53b2361ab8db37b9bca1bf22018663274fddac0f3e4da6c48f1efb" \
+	USER=aptly \
+    GROUP=aptly
 
-COPY resources/ /
 
-RUN apt-get -q update \
- && apt-get -y install bzip2 gnupg gpgv xz-utils ca-certificates \
- && echo "deb http://repo.aptly.info/ squeeze main" > /etc/apt/sources.list.d/aptly.list \
- && apt-key adv --keyserver keys.gnupg.net --recv-keys ED75B5A4483DA07C \
- && apt-get -q update \
- && apt-get -y install aptly=${APTLY_VERSION} \
- && apt-get clean
+RUN set -xe \
+  # create group and user for cas
+  && addgroup -S -g 1000 ${GROUP} \
+  && adduser -S -h "/var/lib/${USER}" -s /bin/bash -G ${GROUP} -u 1000 ${USER} \
+  # upgrade and install dependencies
+  && apk upgrade --quiet --no-cache \
+  && apk add --quiet --no-cache libc6-compat curl xz bzip2 gnupg debian-archive-keyring nginx su-exec \
+  # install aptly
+  && mkdir -p /app/aptly \
+  && curl --fail --silent --location --retry 3 -o aptly_${APTLY_VERSION}_linux_amd64.tar.gz \
+   https://github.com/aptly-dev/aptly/releases/download/v${APTLY_VERSION}/aptly_${APTLY_VERSION}_linux_amd64.tar.gz \
+  && tar zx -C /app/aptly --strip-components=1 -f aptly_${APTLY_VERSION}_linux_amd64.tar.gz \
+  # clean up
+  && apk del --quiet --no-cache --purge \
+  && rm -rf /var/cache/apk/*
+
+USER ${USER}
+
+COPY resources /
 
 # expose volume
 VOLUME [ "/var/lib/aptly" ]
@@ -21,5 +37,4 @@ VOLUME [ "/var/lib/aptly" ]
 EXPOSE 8080
 
 # startup aptly
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/aptly", "api", "serve"]
+CMD /startup.sh
