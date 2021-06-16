@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.14.0
 
 LABEL NAME="docker-aptly" \
     maintainer="hello@cloudogu.com"
@@ -16,7 +16,7 @@ RUN set -xe \
   && adduser -S -h "/var/lib/${USER}" -s /bin/bash -G ${GROUP} -u 1000 ${USER} \
   # upgrade and install dependencies
   && apk upgrade --quiet --no-cache \
-  && apk add --quiet --no-cache libc6-compat curl xz bzip2 gnupg debian-archive-keyring nginx su-exec \
+  && apk add --quiet --no-cache libc6-compat curl xz bzip2 gnupg debian-archive-keyring nginx su-exec bash \
   # install aptly
   && mkdir -p /app/aptly \
   && curl --fail --silent --location --retry 3 -o aptly_${APTLY_VERSION}_linux_amd64.tar.gz \
@@ -28,7 +28,7 @@ RUN set -xe \
 
 USER ${USER}
 
-COPY resources /
+COPY --chown=${USER}:${GROUP} resources /
 
 # expose volume
 VOLUME [ "/var/lib/aptly" ]
