@@ -26,8 +26,6 @@ RUN set -xe \
   && apk del --quiet --no-cache --purge \
   && rm -rf /var/cache/apk/*
 
-USER ${USER}
-
 COPY --chown=${USER}:${GROUP} resources /
 
 # expose volume
@@ -35,6 +33,8 @@ VOLUME [ "/var/lib/aptly" ]
 
 # expose ports
 EXPOSE 8080
+
+USER ${USER}
 
 # startup aptly
 CMD /startup.sh
