@@ -3,7 +3,7 @@ set -o errexit
 set -o pipefail
 
 if [[ -n "${GPG_KEY}" ]]; then
-  if [ [-n "${PASSPHRASE}" ]]; then
+  if [[ -n "${PASSPHRASE}" ]]; then
     echo "${PASSPHRASE}" | gpg --batch --passphrase-fd 0 --import "${GPG_KEY}"
   else
     gpg --batch --import "${GPG_KEY}"
